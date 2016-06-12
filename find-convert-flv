@@ -2,15 +2,30 @@
 # usage: find-convert-flv /source/dir
 # use fcf.conf for further configuration
 
+scriptTitle() {
+scriptName="flvConverter"
+scriptVersion="1.0"
+scriptBuild="12062016"
+scriptAuthor="Michael Matzat"
+printf '%s\n\n';
+eval printf %.0s- '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
+printf '%s\n' "		$scriptName $scriptVersion";
+printf '%s\n' "		Build $scriptBuild";
+printf '%s\n' "		Development by $scriptAuthor";
+eval printf %.0s- '{1..'"${COLUMNS:-$(tput cols)}"\}; echo
+printf '%s\n\n';
+}
+
+scriptTitle;
+echo "cfgFile: $FCF_CFG"
+
 CONFIG_FILE=`echo $FCF_CFG`;
-echo "INFO: found configFile > $FCF_CFG";
-source "$CONFIG_FILE"
+source "$CONFIG_FILE";
 if [ $? = 0 ]
 then
-echo "INFO: loading configFile				${GREEN}[OK]$NONE"
+fcflogV1 "INFO" "configFile" "OK";
 else
-echo "ERROR: loading configFile				${RED}[FAILED]$NONE"
-echo "please check permission and path and env var!"
+fcflogV1 "ERROR" "configFile" "FAILED";
 exit 1
 fi
 
@@ -18,67 +33,67 @@ timestamp=$(date "+%d"."%m"."%Y %T")
 
 # checking sourceDir
 sourceDir="$1"
-if [ -n $1 ]
+if [ -n "$1" ]
 then
-fcflog "INFO" "sourceFolderVar					${GREEN}[OK]$NONE";
-else 
-fcflog "ERROR" "sourceFolderVar					${RED}[FAILED]$NONE";
-echo "usage: find-convert-flv /path/to/folder/ "
+fcflogV1 "INFO" "arguments" "OK";
+else
+fcflogV1 "ERROR" "arguments" "FAILED";
 exit 1
 fi
 
 if [ -d "$1" ]
-then	
-fcflog "INFO" "check sourceFolder				${GREEN}[OK]$NONE";
+then
+fcflogV1 "INFO" "sourceFolder" "OK";
 cd $scriptDir
 else
-fcflog "ERROR" "check sourceFolder				${RED}[FAILED]$NONE";
+fcflogV1 "ERROR" "sourceFolder" "FAILED";
 exit 1
 fi
 
 # define converterClass
-# $1 = filename     $2 = /path/to/file
+# $1 = filename     $2 = /path/to/folder
 convertFile() {
-sourceFileName=$1
-sourceDir=$2
+sourceFileName="$1"
+sourceDir="$2"
 sourceFile="$2/$1.flv"
 destFile="$2/$1.avi"
-fcflog "INFO" "flv-convert started > $sourceFile";
+echo "flvFile: $sourceFile"
 
 # progress indicator
-spinner & 
+spinner &
 spinner_pid=$!
-
-/usr/local/bin/ffmpeg -loglevel quiet -async 1 -i "$sourceFile" -f avi -b 700k -qscale 0 -ab 160k -ar 44100 "$destFile" &>/dev/null
+/usr/local/bin/ffmpeg -loglevel quiet -async 1 -i "$sourceFile" -f avi -b 700k -qscale 0 -ab 160k -ar 44100 "$destFile" &> /dev/null
 
 # kill progress indicator
-kill $spinner_pid &>/dev/null
+kill $spinner_pid &> /dev/null
 
 if [ $? = 0 ]
 then
-fcflog "INFO" "flv-convert					${GREEN}[OK]$NONE";
+fcflogV1 "INFO" "flvConvertion" "OK";
 	case "$deleteFileAfterConvert" in
-		yes) rm "$sourceFile" && fcflog "INFO" "remove sourceFile					${GREEN}[OK]$NONE"
+		yes)
+		rm "$sourceFile"
+		fcflogV1 "INFO" "remove sourceFile" "OK"
 		;;
-		no) fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE"
+		no) fcflogV1 "INFO" "dont remove sourceFile" "OK"
 		;;
-		*) fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE"
+		*) fcflogV1 "INFO" "dont remove sourceFile" "OK"
 		;;
 	esac
 else
-fcflog "WARNING" "flv convertion					${RED}[FAILED]$NONE";
-echo "skipping file > $fileName";
+fcflogV1 "WARNING" "flvConvertion" "FAILED";
+echo "skipping file: $fileName"
 fi
 }
 
 # del/touch fcf.list
-rm $listFile && touch $listFile
+rm $listFile
+touch $listFile
 if [ $? = 0 ]
 then
-fcflog "INFO" "create listFile					${GREEN}[OK]$NONE";
+fcflogV1 "INFO" "create listFile" "OK";
 else
-fcflog "ERROR" "create listFile					${RED}[FAILED]$NONE";
-echo "please check permission and path and env var!"
+fcflogV1 "ERROR" "create listFile" "FAILED";
 exit 1
 fi
 
@@ -89,31 +104,28 @@ ls -1 *.flv| cut -d . -f 1 >> $listFile
 if [ $? = 0 ]
 then
 cd $scriptDir
-fcflog "INFO" "find .flv files					${GREEN}[OK]$NONE";
-fcflog "INFO" "fill listFile					${GREEN}[OK]$NONE";
+fcflogV1 "INFO" "find .flv files" "OK";
+fcflogV1 "INFO" "fill listFile" "OK";
 else
 cd $scriptDir
-fcflog "ERROR" "find .flv files					${RED}[FAILED]$NONE";
-fcflog "ERROR" "fill listFile					${RED}[FAILED]$NONE";
-echo "check if sourceDir exist and connection etablished!"
+fcflogV1 "ERROR" "find .flv files" "FAILED";
+fcflogV1 "ERROR" "fill listFile" "FAILED";
 exit 1
 fi
 
 # read listFile
-# fcflog "INFO" "listFile exist					${GREEN}[OK]$NONE";
+# fcflog "INFO" "listFile exist" "OK";
 while IFS='' read -r fileName
 do
-	convertFile "$fileName" "$sourceDir";
+	convertFile "$fileName" "$sourceDir"
 done < "$listFile"
 
 if [ $? = 0 ]
 then
-fcflog "INFO" "reading listFile					${GREEN}[OK]$NONE";
+fcflogV1 "INFO" "reading listFile" "OK";
 else
-fcflog "ERROR" "reading listFile				${RED}[FAILED]$NONE";
-echo "check permissions and if listFile exists!"
+fcflogV1 "ERROR" "reading listFile" "FAILED";
 exit 1
 fi
 
 exit 0
-

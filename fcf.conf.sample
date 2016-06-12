@@ -5,28 +5,63 @@
 #scriptFileName="find-convert-flv"
 #listFileName="fcf.list"
 #logFileName="fcf.log"
-#deleteFileAfterConvert="yes"
+deleteFileAfterConvert="yes"
 
 # no edit after this line
 scriptFile="$scriptDir/$scriptFileName"
 listFile="$scriptDir/$listFileName"
 logFile="$scriptDir/$logFileName"
-rm $logFile && touch $logFile
+rm $logFile
+touch $logFile
 
 PURPLE=$(tput setaf 13)
 RED=$(tput setaf 1)
-CYAN=$(tput setaf 14)
 YELLOW=$(tput setaf 11)
 GREEN=$(tput setaf 2)
 NONE=$(tput sgr0)
-ERASE="`tput cuu1``tput el`"
+#ERASE="`tput cuu1``tput el`"
 
-fcflog() { 
+fcflogV0() {
 # $1 = DESCRIPTION (INFO, WARNING, ERROR)  $2 = LOGTEXT
 timestamp=$(date "+%d"."%m"."%Y %T")
 echo "$timestamp        $1      $2" >> $logFile
 echo "$1: $2"
 }
+
+fcflogV1() {
+# $1 = DESCRIPTION (INFO, WARNING, ERROR)  $2 = LOGTEXT   $3 = STATECODE
+timestamp=$(date "+%d"."%m"."%Y %T")
+if [ "$3" == "OK" ]
+then
+echo "$timestamp: $1 > $2				[OK]" >> $logFile
+echo "$1: $2 ${GREEN} 					[OK]$NONE"
+else
+echo "$timestamp: $1 > $2				[FAILED]" >> $logFile
+echo "$1: $2 ${RED} 					[FAILED]$NONE"
+fi
+}
+
+fcflogV2() {
+# $1 = DESCRIPTION (INFO, WARNING, ERROR)  $2 = LOGTEXT   $3 = STATECODE
+timestamp=$(date "+%d"."%m"."%Y %T")
+	case "$3" in
+		OK)
+		echo "$timestamp: $1 > $2				[OK]" >> $logFile
+		echo "$1: $2 ${GREEN}					[OK]$NONE"
+		;;
+		FAILED)
+		echo "$timestamp: $1 > $2				[FAILED]" >> $logFile
+		echo "$1: $2 ${RED}					[FAILED]$NONE"
+		;;
+		*)
+		$1="ERROR"
+		$2="no statecode given"
+		echo "$timestamp: $1 > $2				[ERROR]" >> $logFile
+		echo "$1: $2 ${YELLOW} 					[FAILED]$NONE"
+		;;
+	esac
+}
+
 
 spinner() {
     local i sp n
@@ -37,5 +72,3 @@ spinner() {
         printf "%s\b" "${sp:i++%n:1}"
     done
 }
-
-
