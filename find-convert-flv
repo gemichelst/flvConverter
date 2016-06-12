@@ -58,16 +58,19 @@ kill $spinner_pid >/dev/null
 
 if [ $? = 0 ]
 then
-#deleteRowfromList
 fcflog "INFO" "flv-convert					${GREEN}[OK]$NONE";
-	case "$deleteFileAfterConvert" in
-		yes) rm "$sourceFile" && fcflog "INFO" "remove sourceFile					${GREEN}[OK]$NONE"
-		;;
-		no) fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE"
-		;;
-		*) fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE"
-		;;
-	esac
+
+  case "$deleteFileAfterConvert" in
+     yes) 
+     rm "$sourceFile"
+     fcflog "INFO" "remove sourceFile					${GREEN}[OK]$NONE"
+     ;;
+     no)
+     fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE"
+     ;;
+     *) fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE";;
+  esac
+
 else
 fcflog "WARNING" "flv convertion					${RED}[FAILED]$NONE";
 echo "skipping file > $fileName";
