@@ -9,7 +9,7 @@ all .flv files in a given folder to .avi file.
 - after cloning/downloading type "chmod +x install.sh".
 - now you can run the setup with "./install.sh".
 
-the installer only needs the path to the folder which includes .flv files.
+the installer only needs the path where the script will be installed..
 thats all.
 
 usage: find-conver-flv /path/to/flv/files
