@@ -107,7 +107,7 @@ exit 1
 fi
 
 # read listFile
-#fcflog "INFO" "reading listFile					[...]";
+fcflog "INFO" "listFile exist					${GREEN}[OK]$NONE";
 while IFS='' read -r fileName
 do
 	convertFile "$fileName" "$sourceDir";
@@ -121,3 +121,4 @@ fcflog "ERROR" "reading listFile				${RED}[FAILED]$NONE";
 echo "check permissions and if listFile exists!"
 exit 1
 fi
+
