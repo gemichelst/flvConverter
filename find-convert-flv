@@ -91,7 +91,8 @@ fi
 
 # find .flv files in sourceDir and fill listFile
 #find "$sourceDir/" -type f -name "*.flv" -exec echo '{}' >> $listFile \;
-cd $sourceDir && ls -1 *.flv| cut -d . -f 1 >> $listFile
+cd $sourceDir
+ls -1 *.flv| cut -d . -f 1 >> $listFile
 if [ $? = 0 ]
 then
 cd $scriptDir
