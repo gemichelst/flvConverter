@@ -7,14 +7,12 @@ echo "INFO: found configFile > $FCF_CFG";
 source "$CONFIG_FILE"
 if [ $? = 0 ]
 then
-echo "INFO: loading configFile				[OK]"
+echo "INFO: loading configFile				${GREEN}[OK]$NONE"
 else
-echo "ERROR: loading configFile				[FAILED]"
+echo "ERROR: loading configFile				${RED}[FAILED]$NONE"
 echo "please check permission and path and env var!"
 exit 1
 fi
-
-cd $scriptDir
 
 timestamp=$(date "+%d"."%m"."%Y %T")
 
@@ -22,10 +20,19 @@ timestamp=$(date "+%d"."%m"."%Y %T")
 sourceDir="$1"
 if [ -n $1 ]
 then
-fcflog "INFO" "sourceFolderVar					[OK]";
+fcflog "INFO" "sourceFolderVar					${GREEN}[OK]$NONE";
 else 
-fcflog "ERROR" "sourceFolderVar					[FAILED]";
+fcflog "ERROR" "sourceFolderVar					${RED}[FAILED]$NONE";
 echo "usage: find-convert-flv /path/to/folder/ "
+exit 1
+fi
+
+if [ -d "$1" ]
+then	
+fcflog "INFO" "check sourceFolder				${GREEN}[OK]$NONE";
+cd $scriptDir
+else
+fcflog "ERROR" "check sourceFolder				${RED}[FAILED]$NONE";
 exit 1
 fi
 
@@ -46,23 +53,23 @@ spinner_pid=$!
 /usr/local/bin/ffmpeg -loglevel quiet -async 1 -i "$sourceFile" -f avi -b 700k -qscale 0 -ab 160k -ar 44100 "$destFile" < /dev/null
 
 # kill progress imdicator
-kill $spinner_pid &>/dev/null
+kill $spinner_pid >/dev/null
 #####################
 
 if [ $? = 0 ]
 then
 #deleteRowfromList
-fcflog "INFO" "flv-convert					[OK]";
+fcflog "INFO" "flv-convert					${GREEN}[OK]$NONE";
 	case "$deleteFileAfterConvert" in
-		yes) rm "$sourceFile" && fcflog "INFO" "remove sourceFile					[OK]"
+		yes) rm "$sourceFile" && fcflog "INFO" "remove sourceFile					${GREEN}[OK]$NONE"
 		;;
-		no) fcflog "INFO" "dont remove sourceFile					[OK]"
+		no) fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE"
 		;;
-		*) fcflog "INFO" "dont remove sourceFile					[OK]"
+		*) fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE"
 		;;
 	esac
 else
-fcflog "WARNING" "flv convertion					[FAILED]";
+fcflog "WARNING" "flv convertion					${RED}[FAILED]$NONE";
 echo "skipping file > $fileName";
 echo " "
 fi
@@ -72,9 +79,9 @@ fi
 rm $listFile && touch $listFile
 if [ $? = 0 ]
 then
-fcflog "INFO" "create listFile					[OK]";
+fcflog "INFO" "create listFile					${GREEN}[OK]$NONE";
 else
-fcflog "ERROR" "create listFile					[FAILED]";
+fcflog "ERROR" "create listFile					${RED}[FAILED]$NONE";
 echo "please check permission and path and env var!"
 exit 1
 fi
@@ -85,12 +92,12 @@ cd $sourceDir && ls -1 *.flv| cut -d . -f 1 >> $listFile
 if [ $? = 0 ]
 then
 cd $scriptDir
-fcflog "INFO" "find .flv files					[OK]";
-fcflog "INFO" "fill listFile					[OK]";
+fcflog "INFO" "find .flv files					${GREEN}[OK]$NONE";
+fcflog "INFO" "fill listFile					${GREEN}[OK]$NONE";
 else
 cd $scriptDir
-fcflog "ERROR" "find .flv files					[FAILED]";
-fcflog "ERROR" "fill listFile					[FAILED]";
+fcflog "ERROR" "find .flv files					${RED}[FAILED]$NONE";
+fcflog "ERROR" "fill listFile					${RED}[FAILED]$NONE";
 echo "check if sourceDir exist and connection etablished!"
 exit 1
 fi
@@ -104,9 +111,9 @@ done < "$listFile"
 
 if [ $? = 0 ]
 then
-fcflog "INFO" "reading listFile					[OK]";
+fcflog "INFO" "reading listFile					${GREEN}[OK]$NONE";
 else
-fcflog "ERROR" "reading listFile				[FAILED]";
+fcflog "ERROR" "reading listFile				${RED}[FAILED]$NONE";
 echo "check permissions and if listFile exists!"
 exit 1
 fi
