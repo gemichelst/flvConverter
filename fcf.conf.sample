@@ -1,11 +1,25 @@
 #!/bin/bash
 # config file for findAndConvert script
 
+#scriptDir="/media/stick/scripts/flvconverter"
+#scriptFileName="find-convert-flv"
+#listFileName="fcf.list"
+#logFileName="fcf.log"
+#deleteFileAfterConvert="yes"
+
 # no edit after this line
 scriptFile="$scriptDir/$scriptFileName"
 listFile="$scriptDir/$listFileName"
 logFile="$scriptDir/$logFileName"
 rm $logFile && touch $logFile
+
+PURPLE=$(tput setaf 13)
+RED=$(tput setaf 1)
+CYAN=$(tput setaf 14)
+YELLOW=$(tput setaf 11)
+GREEN=$(tput setaf 2)
+NONE=$(tput sgr0)
+ERASE="`tput cuu1``tput el`"
 
 fcflog() { 
 # $1 = DESCRIPTION (INFO, WARNING, ERROR)  $2 = LOGTEXT
@@ -23,4 +37,5 @@ spinner() {
         printf "%s\b" "${sp:i++%n:1}"
     done
 }
+
 
