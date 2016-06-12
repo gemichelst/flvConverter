@@ -107,7 +107,8 @@ exit 1
 fi
 
 # read listFile
-fcflog "INFO" "listFile exist					${GREEN}[OK]$NONE";
+# fcflog "INFO" "listFile exist					${GREEN}[OK]$NONE";
+
 while IFS='' read -r fileName
 do
 	convertFile "$fileName" "$sourceDir";
