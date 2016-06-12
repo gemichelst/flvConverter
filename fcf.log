@@ -1,0 +1,6 @@
+12.06.2016 06:54:07        INFO      sourceFolderVar					[OK]
+12.06.2016 06:54:07        INFO      create listFile					[OK]
+12.06.2016 06:54:07        INFO      find .flv files					[OK]
+12.06.2016 06:54:07        INFO      fill listFile					[OK]
+12.06.2016 06:54:07        INFO      reading listFile					[...]
+12.06.2016 06:54:07        INFO      flv-convert started > /media/stick/downloads/laura/laurateen - Devote Maus im Fick und Spritzrausch - Teil 3.flv
