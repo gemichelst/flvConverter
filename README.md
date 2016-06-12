@@ -10,4 +10,7 @@ after cloning/downloading type "chmod +x install.sh".
 now you can run the setup with "./install.sh".
 the installer only needs 1 input - thats all.
 
+usage: find-conver-flv /path/to/flv/files
+
+
 pleae feel free to comment.
