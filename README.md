@@ -1,5 +1,6 @@
 # flvConverter
-flvConverter | Version 1.0 | 12.06.2016
+Version 1.0 - build 12062016
+coded by gemichelst (http://gemichelst.ddns.net/git/flvConverter)
 
 this is a small bash/shell script which will convert
 all .flv files in a given folder to .avi file.
