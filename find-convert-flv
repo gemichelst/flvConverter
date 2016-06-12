@@ -45,36 +45,29 @@ sourceFile="$2/$1.flv"
 destFile="$2/$1.avi"
 fcflog "INFO" "flv-convert started > $sourceFile";
 
-# progress indocator
+# progress indicator
 spinner & 
 spinner_pid=$!
-#################
 
-/usr/local/bin/ffmpeg -loglevel quiet -async 1 -i "$sourceFile" -f avi -b 700k -qscale 0 -ab 160k -ar 44100 "$destFile" < /dev/null
+/usr/local/bin/ffmpeg -loglevel quiet -async 1 -i "$sourceFile" -f avi -b 700k -qscale 0 -ab 160k -ar 44100 "$destFile" &>/dev/null
 
-# kill progress imdicator
-kill $spinner_pid >/dev/null
-#####################
+# kill progress indicator
+kill $spinner_pid &>/dev/null
 
 if [ $? = 0 ]
 then
 fcflog "INFO" "flv-convert					${GREEN}[OK]$NONE";
-
-  case "$deleteFileAfterConvert" in
-     yes) 
-     rm "$sourceFile"
-     fcflog "INFO" "remove sourceFile					${GREEN}[OK]$NONE"
-     ;;
-     no)
-     fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE"
-     ;;
-     *) fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE";;
-  esac
-
+	case "$deleteFileAfterConvert" in
+		yes) rm "$sourceFile" && fcflog "INFO" "remove sourceFile					${GREEN}[OK]$NONE"
+		;;
+		no) fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE"
+		;;
+		*) fcflog "INFO" "dont remove sourceFile					${GREEN}[OK]$NONE"
+		;;
+	esac
 else
 fcflog "WARNING" "flv convertion					${RED}[FAILED]$NONE";
 echo "skipping file > $fileName";
-echo " "
 fi
 }
 
@@ -92,7 +85,7 @@ fi
 # find .flv files in sourceDir and fill listFile
 #find "$sourceDir/" -type f -name "*.flv" -exec echo '{}' >> $listFile \;
 cd $sourceDir
-'ls -1 *.flv| cut -d . -f 1 >> $listFile
+ls -1 *.flv| cut -d . -f 1 >> $listFile
 if [ $? = 0 ]
 then
 cd $scriptDir
@@ -108,7 +101,6 @@ fi
 
 # read listFile
 # fcflog "INFO" "listFile exist					${GREEN}[OK]$NONE";
-
 while IFS='' read -r fileName
 do
 	convertFile "$fileName" "$sourceDir";
@@ -122,4 +114,6 @@ fcflog "ERROR" "reading listFile				${RED}[FAILED]$NONE";
 echo "check permissions and if listFile exists!"
 exit 1
 fi
+
+exit 0
 
