@@ -20,7 +20,7 @@ scriptTitle;
 echo "cfgFile: $FCF_CFG"
 
 CONFIG_FILE=`echo $FCF_CFG`;
-source "$CONFIG_FILE";
+source "$CONFIG_FILE"
 if [ $? = 0 ]
 then
 fcflogV1 "INFO" "configFile" "OK";
@@ -30,6 +30,8 @@ exit 1
 fi
 
 timestamp=$(date "+%d"."%m"."%Y %T")
+let countLines=0
+let countConverted=0
 
 # checking sourceDir
 sourceDir="$1"
@@ -57,23 +59,21 @@ sourceFileName="$1"
 sourceDir="$2"
 sourceFile="$2/$1.flv"
 destFile="$2/$1.avi"
-echo "flvFile: $sourceFile"
+fcflogV1 "INFO" "flvFile: $sourceFileName" "OK";
 
 # progress indicator
 spinner &
 spinner_pid=$!
 /usr/local/bin/ffmpeg -loglevel quiet -async 1 -i "$sourceFile" -f avi -b 700k -qscale 0 -ab 160k -ar 44100 "$destFile" &> /dev/null
 
-# kill progress indicator
-kill $spinner_pid &> /dev/null
-
 if [ $? = 0 ]
 then
+# kill progress indicator
+disown $spinner_pid && kill $spinner_pid
 fcflogV1 "INFO" "flvConvertion" "OK";
+((countConverted++))
 	case "$deleteFileAfterConvert" in
-		yes)
-		rm "$sourceFile"
-		fcflogV1 "INFO" "remove sourceFile" "OK"
+		yes) rm "$sourceFile" && fcflogV1 "INFO" "remove sourceFile" "OK"
 		;;
 		no) fcflogV1 "INFO" "dont remove sourceFile" "OK"
 		;;
@@ -82,7 +82,7 @@ fcflogV1 "INFO" "flvConvertion" "OK";
 	esac
 else
 fcflogV1 "WARNING" "flvConvertion" "FAILED";
-echo "skipping file: $fileName"
+fcflogV1 "INFO" "skipping: $sourceFileName" "OK";
 fi
 }
 
@@ -115,17 +115,26 @@ fi
 
 # read listFile
 # fcflog "INFO" "listFile exist" "OK";
-while IFS='' read -r fileName
-do
-	convertFile "$fileName" "$sourceDir"
+#while IFS='' read -r line
+while IFS= read line ; do
+	((countLines++))
+	convertFile "$line" "$sourceDir" </dev/null
 done < "$listFile"
 
 if [ $? = 0 ]
 then
 fcflogV1 "INFO" "reading listFile" "OK";
+printf '%s\n\n';
+printf '%s\n' "____________________________";
+fcflogV1 "INFO" "TOTAL FILES    : $countLines" "OK";
+fcflogV1 "INFO" "CONVERTED FILES: $countConverted" "OK";
+exit 0
 else
 fcflogV1 "ERROR" "reading listFile" "FAILED";
+printf '%s\n\n';
+printf '%s\n' "____________________________";
+fcflogV1 "INFO" "CONVERTED FILES: $countConverted" "OK";
 exit 1
 fi
 
-exit 0
+#exit 0
